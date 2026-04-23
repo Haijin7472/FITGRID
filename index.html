@@ -184,11 +184,11 @@
                         <div class="flex justify-between items-start relative z-10 w-full">
                             <span class="text-xs font-semibold text-textMuted">Gym Load</span>
                             <div class="w-1.5 h-1.5 rounded-full bg-[#5ED67A] animate-pulse"></div>
-                        </div>
-                        <div class="relative z-10 mt-auto"><div class="flex items-baseline gap-1"><h3 class="font-bold text-3xl leading-none text-white">24</h3><span class="text-[10px] font-medium text-textMuted">ppl</span></div></div>
-                    </div>
-                    
-                    <!-- 修复点：添加 ID 以支持动态控制卡片渐变氛围背景 -->
+                </div>
+                <div class="relative z-10 mt-auto"><div class="flex items-baseline gap-1"><h3 class="font-bold text-3xl leading-none text-white">38</h3><span class="text-[10px] font-medium text-textMuted">ppl</span></div></div>
+            </div>
+            
+            <!-- 修复点：添加 ID 以支持动态控制卡片渐变氛围背景 -->
                     <div id="home-coach-card-outer" onclick="handleHomeCoachClick()" class="premium-card p-4 flex flex-col justify-between aspect-[4/3] group cursor-pointer relative transition-all duration-500">
                         <!-- 教练 users 水印，默认透明白，预约后通过 JS 动态赋予色彩 -->
                         <i id="home-coach-watermark" data-lucide="users" class="absolute -bottom-4 -right-4 w-20 h-20 text-white/5 pointer-events-none transition-colors duration-500"></i>
@@ -204,14 +204,14 @@
                                     <span id="home-coach-name" class="text-[10px] font-bold text-white truncate">Name</span>
                                 </div>
                                 <button onclick="cancelBooking(event)" class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center active:scale-95 transition-transform text-white shrink-0 hover:bg-[#FF5C77]">
-                                    <i data-lucide="x" class="w-3 h-3"></i>
-                                </button>
-                            </div>
-                            <h3 id="home-coach-time" class="font-bold text-[11px] truncate mt-1.5 transition-colors duration-500">Apr 24 • 14:00</h3>
-                        </div>
+                            <i data-lucide="x" class="w-3 h-3"></i>
+                        </button>
                     </div>
+                    <h3 id="home-coach-time" class="font-bold text-[11px] truncate mt-1.5 transition-colors duration-500">Apr 25 • 14:00</h3>
                 </div>
-            </main>
+            </div>
+        </div>
+    </main>
 
             <!-- 视图: 实时健身房 -->
             <main id="view-gym" class="view-section space-y-5">
@@ -228,7 +228,7 @@
                                 <span class="text-[10px] font-bold text-[#5ED67A] uppercase tracking-wider">Live</span>
                             </div>
                             <div class="flex items-baseline gap-1">
-                                <h3 class="font-bold text-3xl leading-none text-white">24</h3>
+                                <h3 class="font-bold text-3xl leading-none text-white">38</h3>
                                 <span class="text-[10px] font-medium text-textMuted">ppl</span>
                             </div>
                         </div>
@@ -245,8 +245,25 @@
                         <button id="btn-male" onclick="setGender('male')" class="flex-1 py-2 text-xs font-bold rounded-md transition-all relative z-10 text-white bg-[#47A1FF] shadow-sm">Male</button>
                         <button id="btn-female" onclick="setGender('female')" class="flex-1 py-2 text-xs font-medium rounded-md transition-all relative z-10 text-textMuted hover:text-white">Female</button>
                     </div>
-                    <div class="grid grid-cols-3 gap-2.5" id="matrix-grid"></div>
-                    <div class="flex justify-between text-[10px] font-medium text-textMuted px-1 pt-2 border-t border-white/5" id="bfp-scale"></div>
+                    
+                    <!-- 修复点：加入 XY 轴坐标容器，明确标注 Muscle 与 Body Fat -->
+                    <div class="flex items-stretch gap-2">
+                        <!-- Y轴: 肌肉量 (上下) -->
+                        <div class="w-5 shrink-0 relative flex items-center justify-center">
+                            <div class="absolute -rotate-90 whitespace-nowrap text-[10px] font-bold text-textMuted tracking-widest uppercase flex items-center gap-1.5 opacity-80">
+                                Muscle <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- 矩阵网格与 X轴: 体脂率 (底下) -->
+                        <div class="flex-1 min-w-0">
+                            <div class="grid grid-cols-3 gap-2.5" id="matrix-grid"></div>
+                            <div class="flex justify-between text-[10px] font-medium text-textMuted px-1 pt-2 mt-3 border-t border-white/5" id="bfp-scale"></div>
+                            <div class="text-center text-[10px] font-bold text-textMuted tracking-widest uppercase mt-1.5 flex items-center justify-center gap-1.5 opacity-80">
+                                Body Fat <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex gap-3" id="status-cards">
                     <div class="premium-card p-4 flex-1 relative overflow-hidden"><div id="current-icon-container" class="absolute inset-0 z-0"></div><div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent z-0"></div><div class="relative z-10 mt-6"><p class="text-[10px] text-textMuted mb-1">Baseline</p><div id="current-display" class="text-sm font-bold truncate">---</div></div></div>
@@ -362,12 +379,13 @@ let currentCell = null, targetCell = null;
 let macroChart = null, microChart = null, homeMacroChart = null, homeMicroChart = null, gymLoadChart = null;
 const TOTAL_TARGET_MINUTES = 360;
 let weeklySchedulePlan = {};
-let selectedDayIndex = 2; 
+let selectedDayIndex = 0; 
 let selectedCourses = []; 
 
 const calendarDaysInfo = [];
-for(let i=0; i<7; i++) calendarDaysInfo.push({ date: 22 + i, isCurrentMonth: true }); 
-const weekMap = ['WED', 'THU', 'FRI', 'SAT', 'SUN', 'MON', 'TUE'];
+for(let i=0; i<7; i++) calendarDaysInfo.push({ date: 25 + i, isCurrentMonth: true }); 
+// 修复点：将星期的起始日改为周六 (SAT)，以对应25号
+const weekMap = ['SAT', 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI'];
 
 async function saveToFirestore() {
     const auth = window.firebaseAuth; const db = window.firebaseDB;
@@ -974,12 +992,12 @@ const coachesData = [
 ];
 
 const coachSchedules = {
-    'c1': { '23': ['09:00', '10:00', '14:00'], '24': ['11:00', '14:00', '16:00'], '26': ['08:00', '09:00'] },
-    'c2': { '22': ['08:00'], '24': ['13:00', '14:00', '15:00'], '25': ['09:00', '18:00'] },
-    'c3': { '22': ['07:00', '08:00'], '24': ['10:00', '14:00'], '27': ['14:00', '15:00', '16:00'] },
-    'c4': { '24': ['08:00', '09:00', '17:00', '18:00'], '25': ['12:00'] },
-    'c5': { '23': ['10:00', '11:00'], '24': ['15:00', '16:00', '17:00'], '26': ['19:00'] },
-    'c6': { '24': ['07:00', '12:00', '19:00'], '28': ['08:00', '09:00'] }
+    'c1': { '25': ['09:00', '10:00', '14:00'], '26': ['11:00', '14:00', '16:00'], '28': ['08:00', '09:00'] },
+    'c2': { '25': ['13:00', '14:00', '15:00'], '26': ['09:00', '18:00'], '27': ['08:00'] },
+    'c3': { '25': ['10:00', '14:00'], '27': ['14:00', '15:00', '16:00'], '28': ['07:00', '08:00'] },
+    'c4': { '25': ['08:00', '09:00', '17:00', '18:00'], '26': ['12:00'] },
+    'c5': { '25': ['15:00', '16:00', '17:00'], '26': ['10:00', '11:00'], '27': ['19:00'] },
+    'c6': { '25': ['07:00', '12:00', '19:00'], '28': ['08:00', '09:00'] }
 };
 
 let currentSelectedCoach = null;
@@ -1405,7 +1423,7 @@ function renderGymChart() {
             datasets: [
                 { 
                     label: 'Historical', 
-                    data: [12, 45, 32, 28, 24, null, null, null, null], 
+                    data: [12, 45, 32, 28, 24, 38, null, null, null], 
                     borderColor: '#47A1FF', 
                     backgroundColor: 'rgba(71, 161, 255, 0.1)', 
                     borderWidth: 3, 
@@ -1416,7 +1434,7 @@ function renderGymChart() {
                 }, 
                 { 
                     label: 'Predicted', 
-                    data: [null, null, null, null, 24, 38, 65, 42, 15], 
+                    data: [null, null, null, null, null, 38, 65, 42, 15], 
                     borderColor: '#8E8E93', 
                     borderWidth: 2, 
                     borderDash: [5, 5], 
