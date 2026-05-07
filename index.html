@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>RECOMPO</title>
-    <!-- 引入 Chart.js 和 Lucide 图标 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <script>
         window.tailwind = {
-            config: { 
+            config: {
                 theme: { 
                     extend: { 
                         colors: { 
@@ -104,7 +103,17 @@
         .home-chart-container { position: relative; width: 100%; height: 100px; }
         
         .pt-safe { padding-top: calc(1rem + var(--safe-top)); }
-        .pb-safe { padding-bottom: calc(5rem + var(--safe-bottom)); }
+        
+        /* 核心修改点：调整 .pb-safe 定义以适应新的底栏定位 */
+        /* 删除旧的、会导致整个底栏过高的巨大 padding */
+        /* 保留 pt-safe 原有功能 */
+        
+        /* 新增：专门用于底栏内部安全填充的类 */
+        .pb-safe { padding-bottom: var(--safe-bottom); } 
+        
+        /* 新增：专门用于内容区域底部缓冲的类，防止内容被底栏遮挡 */
+        .pb-content-buffer { padding-bottom: calc(5rem + var(--safe-bottom)); }
+        
     </style>
 </head>
 <body class="antialiased select-none overflow-x-hidden">
@@ -123,9 +132,8 @@
     </div>
 </header>
 
-<div class="relative z-10 max-w-lg mx-auto px-5 pt-28 pb-40">
+<div class="relative z-10 max-w-lg mx-auto px-5 pt-28 pb-content-buffer">
 
-    <!-- 视图: 首页 -->
     <main id="view-home" class="view-section view-active space-y-5">
         <div id="home-empty-state" class="premium-card p-6 relative group cursor-pointer" onclick="switchView('vector')">
                     <i data-lucide="dna" class="absolute -top-6 -right-6 w-32 h-32 text-[#FF5C77]/10 rotate-12 transition-transform duration-500 group-hover:scale-110 pointer-events-none"></i>
@@ -140,7 +148,6 @@
                 </div>
 
                 <div id="home-vector-card" class="premium-card p-6 hidden">
-                    <!-- 修复点 3：Target 水印加入动态 ID，通过 JS 动态随性别变化颜色 -->
                     <i id="home-watermark-target" data-lucide="target" class="absolute -top-10 -right-6 w-48 h-48 rotate-12 pointer-events-none opacity-10 transition-colors duration-500"></i>
                     <div class="relative z-10">
                         <div class="flex justify-between items-center mb-6">
@@ -179,18 +186,15 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <div onclick="switchView('gym')" class="premium-card p-4 flex flex-col justify-between aspect-[4/3] group cursor-pointer relative">
-                        <!-- 修复点 4：健身房 activity 水印加入淡淡的绿色 -->
                         <i data-lucide="activity" class="absolute -bottom-4 -right-4 w-20 h-20 text-[#5ED67A]/10 pointer-events-none"></i>
                         <div class="flex justify-between items-start relative z-10 w-full">
                             <span class="text-xs font-semibold text-textMuted">Gym Load</span>
                             <div class="w-1.5 h-1.5 rounded-full bg-[#5ED67A] animate-pulse"></div>
-                </div>
-                <div class="relative z-10 mt-auto"><div class="flex items-baseline gap-1"><h3 class="font-bold text-3xl leading-none text-white">38</h3><span class="text-[10px] font-medium text-textMuted">ppl</span></div></div>
-            </div>
-            
-            <!-- 修复点：添加 ID 以支持动态控制卡片渐变氛围背景 -->
+                        </div>
+                        <div class="relative z-10 mt-auto"><div class="flex items-baseline gap-1"><h3 class="font-bold text-3xl leading-none text-white">24</h3><span class="text-[10px] font-medium text-textMuted">ppl</span></div></div>
+                    </div>
+                    
                     <div id="home-coach-card-outer" onclick="handleHomeCoachClick()" class="premium-card p-4 flex flex-col justify-between aspect-[4/3] group cursor-pointer relative transition-all duration-500">
-                        <!-- 教练 users 水印，默认透明白，预约后通过 JS 动态赋予色彩 -->
                         <i id="home-coach-watermark" data-lucide="users" class="absolute -bottom-4 -right-4 w-20 h-20 text-white/5 pointer-events-none transition-colors duration-500"></i>
                         <div class="relative z-10 w-full flex justify-between items-start">
                             <span class="text-xs font-semibold text-textMuted">Coaches</span>
@@ -204,16 +208,15 @@
                                     <span id="home-coach-name" class="text-[10px] font-bold text-white truncate">Name</span>
                                 </div>
                                 <button onclick="cancelBooking(event)" class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center active:scale-95 transition-transform text-white shrink-0 hover:bg-[#FF5C77]">
-                            <i data-lucide="x" class="w-3 h-3"></i>
-                        </button>
+                                    <i data-lucide="x" class="w-3 h-3"></i>
+                                </button>
+                            </div>
+                            <h3 id="home-coach-time" class="font-bold text-[11px] truncate mt-1.5 transition-colors duration-500">Apr 24 • 14:00</h3>
+                        </div>
                     </div>
-                    <h3 id="home-coach-time" class="font-bold text-[11px] truncate mt-1.5 transition-colors duration-500">Apr 25 • 14:00</h3>
                 </div>
-            </div>
-        </div>
-    </main>
+            </main>
 
-            <!-- 视图: 实时健身房 -->
             <main id="view-gym" class="view-section space-y-5">
                 <div class="premium-card p-6">
                     <div class="flex justify-between items-start mb-6">
@@ -221,14 +224,13 @@
                             <h2 class="font-bold text-xl mb-1">Central Hub</h2>
                             <p class="text-sm text-textMuted">Live & Predicted Load</p>
                         </div>
-                        <!-- 新增：实时在线人数状态直显 -->
                         <div class="flex flex-col items-end">
                             <div class="flex items-center gap-1.5 mb-1">
                                 <div class="w-1.5 h-1.5 rounded-full bg-[#5ED67A] animate-pulse"></div>
                                 <span class="text-[10px] font-bold text-[#5ED67A] uppercase tracking-wider">Live</span>
                             </div>
                             <div class="flex items-baseline gap-1">
-                                <h3 class="font-bold text-3xl leading-none text-white">38</h3>
+                                <h3 class="font-bold text-3xl leading-none text-white">24</h3>
                                 <span class="text-[10px] font-medium text-textMuted">ppl</span>
                             </div>
                         </div>
@@ -237,7 +239,6 @@
                 </div>
             </main>
 
-            <!-- 视图: 矩阵标定 -->
             <main id="view-vector" class="view-section space-y-5">
                 <div class="flex justify-between items-center px-1"><h2 id="vector-main-title" class="font-bold text-xl">Calibration</h2><button id="reset-btn" class="hidden text-xs font-bold active:opacity-50 transition-opacity text-[#47A1FF]">Reset</button></div>
                 <div id="matrix-step-1" class="space-y-4 transition-all duration-300">
@@ -245,25 +246,8 @@
                         <button id="btn-male" onclick="setGender('male')" class="flex-1 py-2 text-xs font-bold rounded-md transition-all relative z-10 text-white bg-[#47A1FF] shadow-sm">Male</button>
                         <button id="btn-female" onclick="setGender('female')" class="flex-1 py-2 text-xs font-medium rounded-md transition-all relative z-10 text-textMuted hover:text-white">Female</button>
                     </div>
-                    
-                    <!-- 修复点：加入 XY 轴坐标容器，明确标注 Muscle 与 Body Fat -->
-                    <div class="flex items-stretch gap-2">
-                        <!-- Y轴: 肌肉量 (上下) -->
-                        <div class="w-5 shrink-0 relative flex items-center justify-center">
-                            <div class="absolute -rotate-90 whitespace-nowrap text-[10px] font-bold text-textMuted tracking-widest uppercase flex items-center gap-1.5 opacity-80">
-                                Muscle <i data-lucide="arrow-right" class="w-3 h-3"></i>
-                            </div>
-                        </div>
-                        
-                        <!-- 矩阵网格与 X轴: 体脂率 (底下) -->
-                        <div class="flex-1 min-w-0">
-                            <div class="grid grid-cols-3 gap-2.5" id="matrix-grid"></div>
-                            <div class="flex justify-between text-[10px] font-medium text-textMuted px-1 pt-2 mt-3 border-t border-white/5" id="bfp-scale"></div>
-                            <div class="text-center text-[10px] font-bold text-textMuted tracking-widest uppercase mt-1.5 flex items-center justify-center gap-1.5 opacity-80">
-                                Body Fat <i data-lucide="arrow-right" class="w-3 h-3"></i>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="grid grid-cols-3 gap-2.5" id="matrix-grid"></div>
+                    <div class="flex justify-between text-[10px] font-medium text-textMuted px-1 pt-2 border-t border-white/5" id="bfp-scale"></div>
                 </div>
                 <div class="flex gap-3" id="status-cards">
                     <div class="premium-card p-4 flex-1 relative overflow-hidden"><div id="current-icon-container" class="absolute inset-0 z-0"></div><div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent z-0"></div><div class="relative z-10 mt-6"><p class="text-[10px] text-textMuted mb-1">Baseline</p><div id="current-display" class="text-sm font-bold truncate">---</div></div></div>
@@ -289,14 +273,12 @@
                     <div class="premium-card p-6"><h3 class="font-bold text-sm mb-4">System Focus</h3><div class="chart-container h-[180px]"><canvas id="microChart"></canvas></div></div>
                     <div class="premium-card p-6" id="energy-guide"></div>
                     
-                    <!-- 新增：Matrix 跳转至 Plan 视图的快捷按钮 -->
                     <button onclick="switchView('plan')" class="w-full py-4 mt-2 rounded-xl bg-white text-black font-bold text-base active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg">
                         Generate My Plan <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </button>
                 </div>
             </main>
 
-            <!-- 视图: 计划 -->
             <main id="view-plan" class="view-section space-y-6">
                 <div id="plan-empty" class="premium-card py-20 flex flex-col items-center justify-center text-center px-6">
                     <i data-lucide="calendar-x-2" class="w-10 h-10 text-textMuted mb-4"></i>
@@ -307,7 +289,6 @@
                 <div id="plan-content" class="hidden space-y-6">
                     <div>
                         <h2 class="font-bold text-[18px] mb-3">Recommended</h2>
-                        <!-- 修复点：更正 snap 语法为 snap-x snap-mandatory，并加入 flex-nowrap 与 touch-pan-x 确保横滑生效 -->
                         <div id="course-grid" class="flex flex-nowrap gap-4 overflow-x-auto touch-pan-x no-scrollbar snap-x snap-mandatory pb-1 after:content-[''] after:w-4 after:shrink-0 w-full"></div>
                     </div>
                     <div id="visual-calendar-grid" class="flex justify-between bg-surfaceLight/50 p-2 rounded-2xl"></div>
@@ -315,10 +296,8 @@
                 </div>
             </main>
 
-            <!-- 视图: 教练列表 -->
             <main id="view-coach" class="view-section space-y-4"></main>
 
-            <!-- 视图: 教练详情 -->
             <main id="view-coach-detail" class="view-section space-y-6">
                 <div id="coach-detail-header" class="premium-card p-6 flex flex-col items-center text-center relative overflow-hidden"></div>
                 <div><h3 class="font-bold text-lg mb-4">Dates</h3><div id="coach-calendar" class="flex gap-3 overflow-x-auto no-scrollbar pb-2 after:content-[''] after:w-4 after:shrink-0"></div></div>
@@ -330,8 +309,8 @@
             </main>
         </div>
 
-<nav class="fixed bottom-0 left-0 right-0 z-50 ios-tab-bar pb-safe pt-2">
-    <div class="flex justify-around items-center max-w-lg mx-auto px-2">
+<nav class="fixed bottom-0 left-0 right-0 z-50 ios-tab-bar pb-safe">
+    <div class="flex justify-around items-center max-w-lg mx-auto px-2 pt-2">
         <button onclick="switchView('home')" id="nav-home" class="nav-item flex flex-col items-center gap-1 flex-1 py-1"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="text-[9px] font-medium mt-1">Summary</span></button>
         <button onclick="switchView('gym')" id="nav-gym" class="nav-item flex flex-col items-center gap-1 flex-1 py-1"><i data-lucide="activity-square" class="w-5 h-5"></i><span class="text-[9px] font-medium mt-1">Live Gym</span></button>
         <button onclick="switchView('vector')" id="nav-vector" class="nav-item flex flex-col items-center gap-1 flex-1 py-1"><i data-lucide="target" class="w-5 h-5"></i><span class="text-[9px] font-medium mt-1">Matrix</span></button>
@@ -379,13 +358,12 @@ let currentCell = null, targetCell = null;
 let macroChart = null, microChart = null, homeMacroChart = null, homeMicroChart = null, gymLoadChart = null;
 const TOTAL_TARGET_MINUTES = 360;
 let weeklySchedulePlan = {};
-let selectedDayIndex = 0; 
+let selectedDayIndex = 2; 
 let selectedCourses = []; 
 
 const calendarDaysInfo = [];
-for(let i=0; i<7; i++) calendarDaysInfo.push({ date: 25 + i, isCurrentMonth: true }); 
-// 修复点：将星期的起始日改为周六 (SAT)，以对应25号
-const weekMap = ['SAT', 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI'];
+for(let i=0; i<7; i++) calendarDaysInfo.push({ date: 22 + i, isCurrentMonth: true }); 
+const weekMap = ['WED', 'THU', 'FRI', 'SAT', 'SUN', 'MON', 'TUE'];
 
 async function saveToFirestore() {
     const auth = window.firebaseAuth; const db = window.firebaseDB;
@@ -770,13 +748,11 @@ function renderCourses(v) {
         // 修复点：添加了严格的 w-[130px] 来锁定宽度，使得卡片的高度完全一致，不会被内部不同长短的文字撑开
         card.className = 'snap-center premium-card-light w-[130px] min-w-[130px] p-4 flex flex-col justify-between aspect-[3/4] shrink-0 relative overflow-hidden group';
         card.innerHTML = `
-            <!-- 背景图片与深色渐变遮罩 -->
             <div class="absolute inset-0 z-0">
                 <img src="${c.image}" class="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-300">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#1C1C1E] via-[#1C1C1E]/60 to-[#1C1C1E]/10"></div>
             </div>
             
-            <!-- 内容层 -->
             <div class="relative z-10">
                 <div class="w-8 h-8 rounded-full bg-black/40 flex items-center justify-center mb-2 backdrop-blur-sm" style="color:${c.color}">
                     <i data-lucide="${c.icon}" class="w-4 h-4"></i>
@@ -891,14 +867,12 @@ function updateTimeline(idx) {
                     
                     <div class="premium-card-light p-4 border transition-all duration-300 flex justify-between items-center gap-2 relative overflow-hidden" style="${isSel ? `border-color: ${c.color};` : 'border-color: rgba(255,255,255,0.05);'}">
                         
-                        <!-- 高级动态背景图与渐变遮罩 -->
                         <div class="absolute inset-0 z-0">
                             <img src="${c.image}" class="w-full h-full object-cover transition-opacity duration-300 ${isSel ? 'opacity-40' : 'opacity-20'}">
                             <div class="absolute inset-0 bg-gradient-to-r from-[#1C1C1E] via-[#1C1C1E]/80 to-[#1C1C1E]/20"></div>
                             ${isSel ? `<div class="absolute inset-0 mix-blend-overlay opacity-40" style="background-color: ${c.color}"></div>` : ''}
                         </div>
 
-                        <!-- 课程内容层 -->
                         <div class="flex-1 min-w-0 relative z-10">
                             <div class="flex items-center gap-1.5 mb-1">
                                 <i data-lucide="${c.icon}" class="w-4 h-4 drop-shadow" style="color:${c.color}"></i>
@@ -907,7 +881,6 @@ function updateTimeline(idx) {
                             <p class="text-sm font-semibold text-white truncate drop-shadow-md">${ses.title}</p>
                         </div>
 
-                        <!-- 预约按钮 -->
                         <button onclick="toggleScheduledCourse('${day.date}', '${ses.title}', '${ses.time}', '${ses.type}', '${c.color}', '${c.icon}')" 
                             class="px-4 py-2 rounded-full text-[11px] font-bold transition-all shrink-0 active:scale-95 relative z-10 ${isSel ? 'shadow-sm border' : 'bg-black/50 text-gray-300 border border-white/5 hover:text-white backdrop-blur-md'}" 
                             style="${isSel ? `background-color: ${c.color}33; color: ${c.color}; border-color: ${c.color}4D;` : ''}">
@@ -992,12 +965,12 @@ const coachesData = [
 ];
 
 const coachSchedules = {
-    'c1': { '25': ['09:00', '10:00', '14:00'], '26': ['11:00', '14:00', '16:00'], '28': ['08:00', '09:00'] },
-    'c2': { '25': ['13:00', '14:00', '15:00'], '26': ['09:00', '18:00'], '27': ['08:00'] },
-    'c3': { '25': ['10:00', '14:00'], '27': ['14:00', '15:00', '16:00'], '28': ['07:00', '08:00'] },
-    'c4': { '25': ['08:00', '09:00', '17:00', '18:00'], '26': ['12:00'] },
-    'c5': { '25': ['15:00', '16:00', '17:00'], '26': ['10:00', '11:00'], '27': ['19:00'] },
-    'c6': { '25': ['07:00', '12:00', '19:00'], '28': ['08:00', '09:00'] }
+    'c1': { '23': ['09:00', '10:00', '14:00'], '24': ['11:00', '14:00', '16:00'], '26': ['08:00', '09:00'] },
+    'c2': { '22': ['08:00'], '24': ['13:00', '14:00', '15:00'], '25': ['09:00', '18:00'] },
+    'c3': { '22': ['07:00', '08:00'], '24': ['10:00', '14:00'], '27': ['14:00', '15:00', '16:00'] },
+    'c4': { '24': ['08:00', '09:00', '17:00', '18:00'], '25': ['12:00'] },
+    'c5': { '23': ['10:00', '11:00'], '24': ['15:00', '16:00', '17:00'], '26': ['19:00'] },
+    'c6': { '24': ['07:00', '12:00', '19:00'], '28': ['08:00', '09:00'] }
 };
 
 let currentSelectedCoach = null;
@@ -1423,7 +1396,7 @@ function renderGymChart() {
             datasets: [
                 { 
                     label: 'Historical', 
-                    data: [12, 45, 32, 28, 24, 38, null, null, null], 
+                    data: [12, 45, 32, 28, 24, null, null, null, null], 
                     borderColor: '#47A1FF', 
                     backgroundColor: 'rgba(71, 161, 255, 0.1)', 
                     borderWidth: 3, 
@@ -1434,7 +1407,7 @@ function renderGymChart() {
                 }, 
                 { 
                     label: 'Predicted', 
-                    data: [null, null, null, null, null, 38, 65, 42, 15], 
+                    data: [null, null, null, null, 24, 38, 65, 42, 15], 
                     borderColor: '#8E8E93', 
                     borderWidth: 2, 
                     borderDash: [5, 5], 
